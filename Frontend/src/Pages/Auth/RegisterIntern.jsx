@@ -58,7 +58,7 @@ const RegisterPage = () => {
         college: "",
         course: "",
         yearOfStudy: "",
-        department: "",
+        domain: "",
 
         // 💼 Professional Info
         skills: [],
@@ -482,19 +482,7 @@ const RegisterPage = () => {
                                     </select>
                                 </div>
 
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <BookOpen className="w-4 h-4 mr-2 text-green-500" />
-                                        Department
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g., Computer Science, Mechanical"
-                                        value={formData.department}
-                                        onChange={(e) => handleInputChange("department", e.target.value)}
-                                        className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                    />
-                                </div>
+
                             </div>
                         </div>
 
@@ -505,8 +493,24 @@ const RegisterPage = () => {
                                 Professional Information
                             </h2>
 
+                            <div>
+                                <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                    <BookOpen className="w-4 h-4 mr-2 text-green-500" />
+                                    Domain
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g Frontend, Backend, Data Science, MERN, MEAN etc"
+                                    value={formData.domain}
+                                    onChange={(e) => handleInputChange("domain", e.target.value)}
+                                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                                />
+                                <span className="text-xs text-green-500 block mt-1 ml-2"># Enter your domain as per Graphura india private limited Internship programme .</span>
+
+                            </div>
+
                             {/* Skills Input */}
-                            <div className="mb-4">
+                            <div className="mb-4 mt-4">
                                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                     <Code className="w-4 h-4 mr-2 text-purple-500" />
                                     Skills *

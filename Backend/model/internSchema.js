@@ -13,7 +13,7 @@ const internSchema = new mongoose.Schema({
   college: { type: String, required: true },
   course: { type: String, required: true },
   yearOfStudy: { type: Number, required: true },
-  department: { type: String },
+  domain: { type: String },
 
   // 💼 Professional Info
   skills: [{ type: String, required: true }],
