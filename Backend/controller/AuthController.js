@@ -1,4 +1,5 @@
 import Intern from "../model/RegisterDB/internSchema.js";
+import Mentor from "../model/RegisterDB/mentorSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -36,6 +37,11 @@ export const registerIntern = async (req, res) => {
     // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    let profileImage = "";
+    if (req.file) {
+      profileImage = req.file.path;
+    }
+
     // 📝 Create new intern
     const newIntern = new Intern({
       name,
@@ -49,7 +55,8 @@ export const registerIntern = async (req, res) => {
       skills: skills || [],
       resumeUrl,
       linkedinUrl,
-      githubUrl
+      githubUrl,
+      profileImage,
     });
 
     await newIntern.save();
@@ -127,5 +134,118 @@ export const checkAuth = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+
+//mentor Authentication Controllers ..............................................
+
+
+
+
+export const registerMentor = async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      password,
+      privateKey,
+      experience,
+      domain,
+      linkedinUrl,
+      githubUrl
+    } = req.body;
+
+    // 1. Check if admin private key correct
+    if (privateKey !== process.env.MENTOR_PRIVATE_KEY) {
+      return res.status(400).json({ message: "Invalid private key!" });
+    }
+
+    // 2. Check existing mentor
+    const existing = await Mentor.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // 3. Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 4. Get Cloudinary URL (if image exists)
+    let profileImage = "";
+    if (req.file) {
+      profileImage = req.file.path;
+    }
+
+    const mentor = await Mentor.create({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      experience,
+      domain,
+      linkedinUrl,
+      githubUrl,
+      profileImage,
+    });
+
+    return res.status(201).json({
+      message: "Mentor registered successfully",
+      mentorId: mentor._id
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Server error during registration",
+    });
+  }
+};
+
+
+export const loginMentor = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Check fields
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    // 2. Check mentor exists
+    const mentor = await Mentor.findOne({ email });
+    if (!mentor) {
+      return res.status(404).json({ message: "Mentor not found" });
+    }
+
+    // 3. Match password
+    const isMatch = await bcrypt.compare(password, mentor.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    // 4. Create JWT token
+    const token = jwt.sign(
+      {
+        id: mentor._id,
+        role: "mentor",
+        email: mentor.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };

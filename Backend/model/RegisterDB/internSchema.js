@@ -19,6 +19,7 @@ const internSchema = new mongoose.Schema({
   resumeUrl: { type: String },
   linkedinUrl: { type: String },
   githubUrl: { type: String },
+  profileImage: { type: String },
 
   // 🧩 Internship Details
   

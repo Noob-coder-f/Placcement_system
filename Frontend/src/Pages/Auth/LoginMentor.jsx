@@ -50,7 +50,7 @@ const LoginMentor = () => {
     if (!token) return;
 
     try {
-      await axios.get("/api/check-auth", {
+      await axios.get("/api/check-auth/mentor", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -292,7 +292,7 @@ const MentorRegister = () => {
                 submitData.append('profileImage', formData.profileImage);
             }
 
-            await axios.post('/api/mentors/register', submitData, {
+            await axios.post('/api/mentor/register', submitData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

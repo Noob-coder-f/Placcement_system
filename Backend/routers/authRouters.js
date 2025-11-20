@@ -1,12 +1,20 @@
 import express from "express";
-import { registerIntern, internLogin, checkAuth } from "../controller/AuthController.js";
+import { registerIntern, internLogin, checkAuth, registerMentor, loginMentor } from "../controller/AuthController.js";
 import { authMiddleware, allowRoles } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/upload.js"
 
 
 const router = express.Router();
 
-router.post("/register/intern", registerIntern);
+router.post("/register/intern", upload.single("profileImage"),  registerIntern);
 router.post("/login/intern", internLogin);
-router.get("/check-auth", authMiddleware, allowRoles("intern"), checkAuth);
+
+
+router.post("/mentor/register", upload.single("profileImage"), registerMentor);
+router.post("/login/mentor", loginMentor);
+
+
+router.get("/check-auth/intern", authMiddleware, allowRoles("intern"), checkAuth);
+router.get("/check-auth/mentor", authMiddleware, allowRoles("mentor"), checkAuth);
 
 export default router;

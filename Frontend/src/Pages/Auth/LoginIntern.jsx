@@ -50,7 +50,7 @@ const LoginPage = () => {
     if (!token) return;
 
     try {
-      await axios.get("/api/check-auth", {
+      await axios.get("/api/check-auth/intern", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
