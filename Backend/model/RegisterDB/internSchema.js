@@ -15,34 +15,38 @@ const internSchema = new mongoose.Schema({
   domain: { type: String },
 
   // 💼 Professional Info
-  skills: [{ type: String, required: true }],
+  skills: [
+    {
+      name: { type: String, required: true }
+    }
+  ],
   resumeUrl: { type: String },
   linkedinUrl: { type: String },
   githubUrl: { type: String },
   profileImage: { type: String },
 
   // 🧩 Internship Details
-  
-  appliedFor: [{ type: String }],
+
+  appliedFor: [ { name :{ type: String } } ],
 
 
-mentorFeedback: [
-  {
-    comment: { type: String },
-    rating: { type: Number, min: 1, max: 5 },
-    date: { type: Date, default: Date.now },
-    improvementSuggestions: { type: String },
-  }
-],
+  mentorFeedback: [
+    {
+      comment: { type: String },
+      rating: { type: Number, min: 1, max: 5 },
+      date: { type: Date, default: Date.now },
+      improvementSuggestions: { type: String },
+    }
+  ],
 
-hiringTeamFeedback: [
-  {
-    comment: { type: String },
-    rating: { type: Number, min: 1, max: 5 },
-    date: { type: Date, default: Date.now },
-    improvementSuggestions: { type: String },
-  }
-],
+  hiringTeamFeedback: [
+    {
+      comment: { type: String },
+      rating: { type: Number, min: 1, max: 5 },
+      date: { type: Date, default: Date.now },
+      improvementSuggestions: { type: String },
+    }
+  ],
 
 
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],

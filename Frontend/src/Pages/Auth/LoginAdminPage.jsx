@@ -253,7 +253,7 @@ const LoginAdmin= () => {
             <p className="text-gray-600 text-xs">
               Don't have an account?{" "}
               <a 
-                href="/register-hiringteam" 
+                href="/register-admin" 
                 className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-200 underline underline-offset-2"
               >
                 Create Account

@@ -10,6 +10,7 @@ import connectDB from './config/db.js';
 
 
 import authRoutes from './routers/authRouters.js';
+import internRoutes from './routers/InternRoutes.js'
 
 
 
@@ -23,6 +24,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use('/api', authRoutes);
+app.use('/api', internRoutes);
 
 
 

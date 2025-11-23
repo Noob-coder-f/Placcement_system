@@ -66,7 +66,7 @@ const RegisterPage = () => {
         resumeUrl: "",
         linkedinUrl: "",
         githubUrl: "",
-        
+
         // Single skill input
         currentSkill: ""
     });
@@ -349,16 +349,19 @@ const RegisterPage = () => {
         try {
             // Create FormData for file upload
             const submitFormData = new FormData();
-            
+
             // Append all form fields
             Object.keys(formData).forEach(key => {
-                if (key === 'skills') {
-                    // Convert skills array to JSON string
-                    submitFormData.append(key, JSON.stringify(formData[key]));
-                } else if (key !== 'confirmPassword' && key !== 'currentSkill') {
+                if (key === "skills") {
+                    // convert ["React"] → [{name: "React"}]
+                    const formattedSkills = formData.skills.map(skill => ({ name: skill }));
+                    submitFormData.append("skills", JSON.stringify(formattedSkills));
+                }
+                else if (key !== "confirmPassword" && key !== "currentSkill") {
                     submitFormData.append(key, formData[key]);
                 }
             });
+
 
             // Append profile image if exists
             if (profileImageFile) {
@@ -432,22 +435,22 @@ const RegisterPage = () => {
                                     <Camera className="w-4 h-4 mr-2 text-blue-500" />
                                     Profile Image
                                 </label>
-                                
+
                                 <div className="flex items-center space-x-6">
                                     {/* Image Preview */}
                                     <div className="relative">
                                         <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden">
                                             {imagePreview ? (
-                                                <img 
-                                                    src={imagePreview} 
-                                                    alt="Profile preview" 
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Profile preview"
                                                     className="w-full h-full object-cover rounded-full"
                                                 />
                                             ) : (
                                                 <User className="w-8 h-8 text-gray-400" />
                                             )}
                                         </div>
-                                        
+
                                         {/* Remove button */}
                                         {imagePreview && (
                                             <button
@@ -475,9 +478,9 @@ const RegisterPage = () => {
                                                     </>
                                                 )}
                                             </div>
-                                            <input 
-                                                type="file" 
-                                                className="hidden" 
+                                            <input
+                                                type="file"
+                                                className="hidden"
                                                 accept="image/*"
                                                 onChange={handleImageUpload}
                                                 disabled={isUploading}
@@ -673,7 +676,11 @@ const RegisterPage = () => {
                                         <option value="2">2nd Year</option>
                                         <option value="3">3rd Year</option>
                                         <option value="4">4th Year</option>
-                                        <option value="5">5th Year</option>
+                                        {/* 📘 Diploma Levels */}
+                                        <option value="Post Diploma">Post Diploma</option>
+                                        <option value="Higher Diploma">Higher Diploma (HD)</option>
+                                        {/* 🎓 Completed */}
+                                        <option value="Graduate">Graduated</option>
                                     </select>
                                 </div>
                             </div>
