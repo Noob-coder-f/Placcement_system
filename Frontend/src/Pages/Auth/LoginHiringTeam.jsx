@@ -23,7 +23,7 @@ const createCaptcha = () => {
   };
 };
 
-const LoginPage = () => {
+const LoginHiringTeam = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -46,17 +46,17 @@ const LoginPage = () => {
 
   useEffect(() => {
   const verifyAuth = async () => {
-    const token = localStorage.getItem("interToken");
+    const token = localStorage.getItem("HiringTeamToken");
     if (!token) return;
 
     try {
-      await axios.get("/api/check-auth/intern", {
+      await axios.get("/api/check-auth/hiring", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       // Token valid → redirect
-      navigate("/dashboard/intern");
+      navigate("/dashboard/hiring-team");
     } catch (err) {
       localStorage.removeItem("token", err);
     }
@@ -86,12 +86,12 @@ const LoginPage = () => {
     }
 
     try {
-      const res = await axios.post("/api/login/intern", {
+      const res = await axios.post("/api/login/hiring-team", {
         email,
         password,
       });
-      localStorage.setItem("interToken", res.data.token);
-      navigate("/dashboard/intern");
+      localStorage.setItem("HiringTeamToken", res.data.token);
+      navigate("/dashboard/hiring-team");
     } catch (err) { 
       setError(
         err.response?.data?.message ||
@@ -129,7 +129,7 @@ const LoginPage = () => {
           {/* Mobile Header */}
           <div className="lg:hidden mb-4 sm:mb-5">
             <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Intern Login
+              Hiring Team Login
             </h2>
             <p className="text-gray-600 text-sm">Welcome back! Please sign in to your account</p>
           </div>
@@ -137,7 +137,7 @@ const LoginPage = () => {
           {/* Desktop Header */}
           <div className="hidden lg:block mb-5 lg:mb-6">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Intern Login
+              Hiring Team Login
             </h2>
             <p className="text-gray-600 text-sm">Welcome back! Please sign in to your account</p>
           </div>
@@ -253,7 +253,7 @@ const LoginPage = () => {
             <p className="text-gray-600 text-xs">
               Don't have an account?{" "}
               <a 
-                href="/register-intern" 
+                href="/register-hiring-team" 
                 className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-200 underline underline-offset-2"
               >
                 Create Account
@@ -278,4 +278,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginHiringTeam;

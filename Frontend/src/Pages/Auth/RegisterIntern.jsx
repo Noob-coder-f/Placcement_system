@@ -18,7 +18,9 @@ import {
     Shield,
     RefreshCw,
     CheckCircle,
-    XCircle
+    XCircle,
+    Camera,
+    Upload
 } from "lucide-react";
 
 const getRandomInt = (min, max) =>
@@ -47,7 +49,6 @@ const RegisterPage = () => {
     // Form state
     const [formData, setFormData] = useState({
         // 👤 Basic Details
-        uniqueId: "",
         name: "",
         email: "",
         phone: "",
@@ -82,6 +83,10 @@ const RegisterPage = () => {
         score: 0,
         feedback: ""
     });
+    const [suggestions, setSuggestions] = useState([]);
+    const [imagePreview, setImagePreview] = useState("");
+    const [isUploading, setIsUploading] = useState(false);
+    const [profileImageFile, setProfileImageFile] = useState(null);
 
     // Password strength checker
     const checkPasswordStrength = (password) => {
@@ -129,14 +134,71 @@ const RegisterPage = () => {
         }
     };
 
+    // Profile Image Handler
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError("Please select a valid image file");
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError("Image size should be less than 5MB");
+            return;
+        }
+
+        setIsUploading(true);
+        setError("");
+
+        try {
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+
+            // Store the file object for later upload
+            setProfileImageFile(file);
+
+        } catch (err) {
+            setError("Failed to process image. Please try again.");
+            console.error("Image processing error:", err);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const removeProfileImage = () => {
+        setImagePreview("");
+        setProfileImageFile(null);
+    };
+
     const addSkill = () => {
-        if (formData.currentSkill.trim() && !formData.skills.includes(formData.currentSkill.trim())) {
+        const skillToAdd = formData.currentSkill.trim();
+        if (skillToAdd && !formData.skills.includes(skillToAdd)) {
             setFormData(prev => ({
                 ...prev,
-                skills: [...prev.skills, prev.currentSkill.trim()],
+                skills: [...prev.skills, skillToAdd],
                 currentSkill: ""
             }));
+            setSuggestions([]); // Clear suggestions after adding
         }
+    };
+
+    const addSuggestedSkill = (skill) => {
+        if (!formData.skills.includes(skill)) {
+            setFormData(prev => ({
+                ...prev,
+                skills: [...prev.skills, skill],
+                currentSkill: "" // Clear the input field
+            }));
+        }
+        setSuggestions([]);
     };
 
     const removeSkill = (skillToRemove) => {
@@ -156,7 +218,7 @@ const RegisterPage = () => {
     const validateForm = () => {
         // Required fields validation
         const requiredFields = [
-            'uniqueId', 'name', 'email', 'phone', 'password',
+            'name', 'email', 'phone', 'password',
             'college', 'course', 'yearOfStudy'
         ];
 
@@ -198,7 +260,72 @@ const RegisterPage = () => {
             return false;
         }
 
+        // Skills validation
+        if (formData.skills.length === 0) {
+            setError("Please add at least one skill");
+            return false;
+        }
+
         return true;
+    };
+
+    const allSkills = [
+        "JavaScript", "TypeScript", "Python", "Java", "C", "C++", "C#", "Go", "PHP", "Ruby",
+        "HTML", "CSS", "Tailwind CSS", "Bootstrap", "SASS",
+        "React", "Next.js", "Vue.js", "Angular", "Svelte",
+        "Node.js", "Express.js", "NestJS", "Django", "Flask", "Spring Boot",
+        "MongoDB", "MySQL", "PostgreSQL", "SQLite", "Firebase", "Oracle",
+        "Git", "GitHub", "GitLab", "Bitbucket",
+        "Machine Learning", "Deep Learning", "Data Science", "Data Analysis",
+        "TensorFlow", "Keras", "PyTorch",
+        "Pandas", "NumPy", "Matplotlib", "Scikit-learn",
+        "Prompt Engineering", "AI Tools", "NLP", "Computer Vision",
+        "React Native", "Android Development", "Kotlin", "Java (Android)",
+        "Swift", "iOS Development", "Flutter", "Dart",
+        "Cyber Security", "Ethical Hacking", "Penetration Testing",
+        "AWS", "Azure", "Google Cloud", "DevOps",
+        "Docker", "Kubernetes", "Linux", "Shell Scripting",
+        "UI/UX Design", "Figma", "Adobe XD", "Photoshop", "Illustrator",
+        "Canva", "Graphic Design", "Video Editing",
+        "After Effects", "Premiere Pro",
+        "SEO", "Content Writing", "Copywriting",
+        "Social Media Management", "Facebook Ads",
+        "Google Ads", "Email Marketing", "Influencer Marketing",
+        "Brand Management",
+        "Business Development", "Sales", "Marketing",
+        "Cold Calling", "Lead Generation",
+        "Operations Management", "Project Management",
+        "Product Management", "Research & Analysis",
+        "Human Resources", "Recruitment", "Talent Acquisition",
+        "Employee Engagement", "Training & Development",
+        "Interview Skills", "Payroll Processing",
+        "Accounting", "Finance", "Investment Analysis",
+        "Bookkeeping", "Tally", "GST Filing",
+        "Financial Modeling", "Excel", "Power BI",
+        "Data Visualization",
+        "MS Word", "MS Excel", "MS PowerPoint",
+        "Email Communication", "Professional Writing",
+        "Customer Support", "Client Handling",
+        "Documentation", "Report Writing",
+        "Communication", "Leadership", "Teamwork", "Problem Solving",
+        "Creativity", "Time Management", "Critical Thinking",
+        "Adaptability", "Public Speaking", "Negotiation",
+        "Event Management", "Photography", "Video Editing",
+        "Blogging", "Content Creation", "Podcast Editing",
+        "Typing", "Data Entry", "Customer Service",
+    ];
+
+    const handleSkillInput = (value) => {
+        handleInputChange("currentSkill", value);
+
+        if (value.length >= 1) {
+            const filtered = allSkills.filter(skill =>
+                skill.toLowerCase().startsWith(value.toLowerCase())
+            );
+            setSuggestions(filtered.slice(0, 6)); // show only top 6
+        } else {
+            setSuggestions([]);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -220,10 +347,33 @@ const RegisterPage = () => {
         setIsLoading(true);
 
         try {
-            // Prepare data for API call (remove temporary fields)
-            const { ...submitData } = formData;
+            // Create FormData for file upload
+            const submitFormData = new FormData();
 
-            await axios.post("http://localhost:5000/api/register", submitData);
+            // Append all form fields
+            Object.keys(formData).forEach(key => {
+                if (key === "skills") {
+                    // convert ["React"] → [{name: "React"}]
+                    const formattedSkills = formData.skills.map(skill => ({ name: skill }));
+                    submitFormData.append("skills", JSON.stringify(formattedSkills));
+                }
+                else if (key !== "confirmPassword" && key !== "currentSkill") {
+                    submitFormData.append(key, formData[key]);
+                }
+            });
+
+
+            // Append profile image if exists
+            if (profileImageFile) {
+                submitFormData.append("profileImage", profileImageFile);
+            }
+
+            // Make POST request with FormData
+            await axios.post("/api/register/intern", submitFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
             setSuccess("Registration successful! Redirecting to login...");
 
@@ -279,24 +429,71 @@ const RegisterPage = () => {
                                 Basic Details
                             </h2>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <User className="w-4 h-4 mr-2 text-blue-500" />
-                                        Unique ID *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter your Graphura ID GRAPHURA/XX/XX/ZZZ"
-                                        value={formData.uniqueId}
-                                        onChange={(e) => handleInputChange("uniqueId", e.target.value)}
-                                        className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                        required
-                                    />
-                                    <span className="text-xs text-green-500 block mt-1 ml-2"># Should be in Capital Letter - Format: GRAPHURA/XX/XX/ZZZ </span>
+                            {/* Profile Image Upload */}
+                            <div className="mb-6">
+                                <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+                                    <Camera className="w-4 h-4 mr-2 text-blue-500" />
+                                    Profile Image
+                                </label>
 
+                                <div className="flex items-center space-x-6">
+                                    {/* Image Preview */}
+                                    <div className="relative">
+                                        <div className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden">
+                                            {imagePreview ? (
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Profile preview"
+                                                    className="w-full h-full object-cover rounded-full"
+                                                />
+                                            ) : (
+                                                <User className="w-8 h-8 text-gray-400" />
+                                            )}
+                                        </div>
+
+                                        {/* Remove button */}
+                                        {imagePreview && (
+                                            <button
+                                                type="button"
+                                                onClick={removeProfileImage}
+                                                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                            >
+                                                <XCircle className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Upload Controls */}
+                                    <div className="flex-1">
+                                        <label className="flex flex-col items-center justify-center w-full p-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                                            <div className="flex flex-col items-center justify-center space-y-2">
+                                                {isUploading ? (
+                                                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <>
+                                                        <Upload className="w-6 h-6 text-gray-400" />
+                                                        <span className="text-sm text-gray-600 font-medium">
+                                                            Click to upload profile image
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                disabled={isUploading}
+                                            />
+                                        </label>
+                                        <p className="text-xs text-gray-500 mt-2 text-center">
+                                            JPG, PNG, WEBP (Max 5MB)
+                                        </p>
+                                    </div>
                                 </div>
+                            </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                         <User className="w-4 h-4 mr-2 text-blue-500" />
@@ -479,11 +676,13 @@ const RegisterPage = () => {
                                         <option value="2">2nd Year</option>
                                         <option value="3">3rd Year</option>
                                         <option value="4">4th Year</option>
-                                        <option value="5">5th Year</option>
+                                        {/* 📘 Diploma Levels */}
+                                        <option value="Post Diploma">Post Diploma</option>
+                                        <option value="Higher Diploma">Higher Diploma (HD)</option>
+                                        {/* 🎓 Completed */}
+                                        <option value="Graduate">Graduated</option>
                                     </select>
                                 </div>
-
-
                             </div>
                         </div>
 
@@ -494,47 +693,106 @@ const RegisterPage = () => {
                                 Professional Information
                             </h2>
 
-                            <div>
+                            <div className="mb-4">
                                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                     <BookOpen className="w-4 h-4 mr-2 text-green-500" />
                                     Domain
                                 </label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g Frontend, Backend, Data Science, MERN, MEAN etc"
+
+                                <select
                                     value={formData.domain}
                                     onChange={(e) => handleInputChange("domain", e.target.value)}
-                                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                />
-                                <span className="text-xs text-green-500 block mt-1 ml-2"># Enter your domain as per Graphura india private limited Internship programme .</span>
+                                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white"
+                                >
+                                    <option value="">Select Domain</option>
+                                    <optgroup label="Technical Domains">
+                                        <option value="Frontend Development">Frontend Development</option>
+                                        <option value="Backend Development">Backend Development</option>
+                                        <option value="Full Stack Development">Full Stack Development</option>
+                                        <option value="MERN Stack">MERN Stack</option>
+                                        <option value="MEAN Stack">MEAN Stack</option>
+                                        <option value="Data Science">Data Science</option>
+                                        <option value="Machine Learning">Machine Learning</option>
+                                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                                        <option value="DevOps">DevOps</option>
+                                        <option value="Cloud Computing">Cloud Computing</option>
+                                        <option value="Cyber Security">Cyber Security</option>
+                                        <option value="UI/UX Design">UI / UX Design</option>
+                                        <option value="Android Development">Android Development</option>
+                                        <option value="iOS Development">iOS Development</option>
+                                        <option value="Software Testing / QA">Software Testing / QA</option>
+                                        <option value="Blockchain Development">Blockchain Development</option>
+                                        <option value="Game Development">Game Development</option>
+                                    </optgroup>
+                                    <optgroup label="Non-Technical Domains">
+                                        <option value="Human Resources">Human Resources (HR)</option>
+                                        <option value="Business Development">Business Development (BD)</option>
+                                        <option value="Digital Marketing">Digital Marketing</option>
+                                        <option value="Social Media Management">Social Media Management</option>
+                                        <option value="Content Writing">Content Writing</option>
+                                        <option value="Graphic Design">Graphic Design</option>
+                                        <option value="Finance">Finance</option>
+                                        <option value="Accounting">Accounting</option>
+                                        <option value="Sales & Marketing">Sales & Marketing</option>
+                                        <option value="Customer Support">Customer Support</option>
+                                        <option value="Operations Management">Operations Management</option>
+                                        <option value="Project Management">Project Management</option>
+                                        <option value="Email and Outreaching">Email and Outreaching</option>
+                                        <option value="Event Management">Event Management</option>
+                                        <option value="Quality Assurance">Quality Assurance</option>
+                                    </optgroup>
+                                </select>
+
+                                <span className="text-xs text-green-500 block mt-1 ml-2">
+                                    # Select your domain as per Graphura India Private Limited Internship Programme.
+                                </span>
                             </div>
 
                             {/* Skills Input */}
-                            <div className="mb-4 mt-4">
+                            <div className="mb-4">
                                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                     <Code className="w-4 h-4 mr-2 text-purple-500" />
                                     Skills *
                                 </label>
-                                <div className="flex space-x-2 mb-3">
-                                    <input
-                                        type="text"
-                                        placeholder="Add a skill (e.g., JavaScript, Python)"
-                                        value={formData.currentSkill}
-                                        onChange={(e) => handleInputChange("currentSkill", e.target.value)}
-                                        onKeyPress={handleSkillKeyPress}
-                                        className="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={addSkill}
-                                        className="px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
-                                    >
-                                        Add
-                                    </button>
+
+                                <div className="relative">
+                                    {/* Input */}
+                                    <div className="flex space-x-2 mb-3">
+                                        <input
+                                            type="text"
+                                            placeholder="Add a skill (e.g., JavaScript, Python)"
+                                            value={formData.currentSkill}
+                                            onChange={(e) => handleSkillInput(e.target.value)}
+                                            onKeyPress={handleSkillKeyPress}
+                                            className="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={addSkill}
+                                            className="px-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+
+                                    {/* 🔽 Auto Suggestions Dropdown */}
+                                    {suggestions.length > 0 && (
+                                        <div className="absolute z-20 bg-white border border-gray-200 rounded-xl shadow-lg w-full max-h-48 overflow-y-auto">
+                                            {suggestions.map((skill, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => addSuggestedSkill(skill)}
+                                                    className="px-3 py-2 cursor-pointer hover:bg-blue-50 text-sm"
+                                                >
+                                                    {skill}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Skills Tags */}
-                                <div className="flex flex-wrap gap-2">
+                                {/* Skill Tags */}
+                                <div className="flex flex-wrap gap-2 mt-2">
                                     {formData.skills.map((skill, index) => (
                                         <div
                                             key={index}
@@ -544,13 +802,14 @@ const RegisterPage = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => removeSkill(skill)}
-                                                className="text-blue-600 hover:text-blue-800"
+                                                className="text-blue-600 hover:text-blue-800 ml-1"
                                             >
                                                 ×
                                             </button>
                                         </div>
                                     ))}
                                 </div>
+
                                 {formData.skills.length === 0 && (
                                     <p className="text-sm text-gray-500 mt-2">Add at least one skill</p>
                                 )}
