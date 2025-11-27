@@ -88,3 +88,7 @@ export const updateInternProfile = async (req, res) => {
   }
 };
 
+
+
+
+

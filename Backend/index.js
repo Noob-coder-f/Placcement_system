@@ -10,8 +10,9 @@ import connectDB from './config/db.js';
 
 
 import authRoutes from './routers/authRouters.js';
-import internRoutes from './routers/InternRoutes.js'
-import MentorRoutes from './model/RegisterDB/mentorSchema.js';
+import internRoutes from './routers/InternRoutes.js';
+// import MentorRoutes from './model/RegisterDB/mentorSchema.js';
+import MentorRoutes from './routers/MentorRoutes.js';
 
 
 

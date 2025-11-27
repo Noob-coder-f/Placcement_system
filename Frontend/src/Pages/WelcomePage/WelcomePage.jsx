@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import JobsSlider from "./JobsSlider";
 
 function WelcomePage() {
   const [showLoginOptions, setShowLoginOptions] = useState(false);
@@ -189,7 +190,7 @@ function WelcomePage() {
             </div>
           </div>
         </section>
-
+        <JobsSlider />
         {/* Who We Are Section */}
         <section className="py-12 sm:py-16 bg-gradient-to-r from-sky-50 to-blue-50">
           <div className="container mx-auto px-4 sm:px-6">

@@ -5,6 +5,7 @@ const MentorProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
   const [formData, setFormData] = useState({
@@ -14,11 +15,8 @@ const MentorProfile = () => {
     experience: '',
     linkedinUrl: '',
     githubUrl: '',
-    profileImage: '',
-    domain: []
+    profileImage: ''
   });
-
-  const [newDomain, setNewDomain] = useState('');
 
   // Get token from localStorage
   const getToken = () => {
@@ -57,8 +55,7 @@ const MentorProfile = () => {
         experience: mentorData.experience || '',
         linkedinUrl: mentorData.linkedinUrl || '',
         githubUrl: mentorData.githubUrl || '',
-        profileImage: mentorData.profileImage || '',
-        domain: mentorData.domain || []
+        profileImage: mentorData.profileImage || ''
       });
       
     } catch (error) {
@@ -74,48 +71,91 @@ const MentorProfile = () => {
     }
   };
 
-  // Update mentor data
+  // Upload profile image first, then update profile
+  const uploadImage = async (imageFile) => {
+    try {
+      setUploadingImage(true);
+      const token = getToken();
+      
+      const imageFormData = new FormData();
+      imageFormData.append('profileImage', imageFile);
+
+      const response = await axios.post('/api/upload/profile-image', imageFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data.imageUrl; // Return the uploaded image URL
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw new Error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Update mentor profile data
   const handleSave = async () => {
     try {
       setSaving(true);
       const token = getToken();
-      
       if (!token) {
-        showMessage('Authentication required', 'error');
+        showMessage("Authentication required", "error");
         return;
       }
 
-      // Prepare data for API (exclude email as it might not be editable)
-      const updateData = {
+      let profileImageUrl = formData.profileImage;
+
+      // If profileImage is a File object, upload it first
+      if (formData.profileImage instanceof File) {
+        try {
+          profileImageUrl = await uploadImage(formData.profileImage);
+          showMessage("Profile image uploaded successfully!", "success");
+        } catch (error) {
+          showMessage("Failed to upload profile image", "error", error);
+          return;
+        }
+      }
+
+      // Prepare profile data (without the File object)
+      const profileData = {
         name: formData.name,
         phone: formData.phone,
         experience: formData.experience,
         linkedinUrl: formData.linkedinUrl,
         githubUrl: formData.githubUrl,
-        domain: formData.domain,
-        profileImage: formData.profileImage
+        profileImage: profileImageUrl, // Use the URL from upload
       };
 
-      const response = await axios.put('/api/mentors/profile', updateData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      // Update profile with the data
+      const response = await axios.put(
+        "/api/mentors/profile",
+        profileData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
+      // Update form data with the response
       setFormData(prev => ({
         ...prev,
-        ...response.data
+        ...response.data,
+        email: prev.email // Keep email from previous state
       }));
+      
       setIsEditing(false);
-      showMessage('Profile updated successfully!', 'success');
+      showMessage("Profile updated successfully!", "success");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      if (error.response?.status === 401) {
-        showMessage('Session expired. Please login again.', 'error');
-        localStorage.removeItem('mentorToken');
+      console.error('Save error:', error);
+      if (error.response?.data?.message) {
+        showMessage(error.response.data.message, "error");
       } else {
-        showMessage('Failed to update profile', 'error');
+        showMessage("Failed to update profile", "error");
       }
     } finally {
       setSaving(false);
@@ -129,76 +169,31 @@ const MentorProfile = () => {
     }));
   };
 
-  const addDomain = () => {
-    if (newDomain.trim() && !formData.domain.includes(newDomain.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        domain: [...prev.domain, newDomain.trim()]
-      }));
-      setNewDomain('');
-    }
-  };
-
-  const removeDomain = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      domain: prev.domain.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleImageUpload = async (event) => {
+  const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Check file size (max 5MB)
+    // Validation
+    if (!file.type.startsWith("image/")) {
+      showMessage("Please upload an image file", "error");
+      return;
+    }
+
     if (file.size > 5 * 1024 * 1024) {
-      showMessage('Image size should be less than 5MB', 'error');
+      showMessage("Image size should be less than 5MB", "error");
       return;
     }
 
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      showMessage('Please upload an image file', 'error');
-      return;
-    }
-
-    try {
-      const uploadData = new FormData();
-      uploadData.append('image', file);
-
-      const token = getToken();
-      const response = await axios.post('/api/upload/profile-image', uploadData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      setFormData(prev => ({
-        ...prev,
-        profileImage: response.data.imageUrl
-      }));
-      showMessage('Profile image updated!', 'success');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      if (error.response?.status === 401) {
-        showMessage('Session expired. Please login again.', 'error');
-        localStorage.removeItem('mentorToken');
-      } else {
-        showMessage('Failed to upload image', 'error');
-      }
-    }
+    // Store the file in state - this will be uploaded separately
+    setFormData((prev) => ({
+      ...prev,
+      profileImage: file,
+    }));
   };
 
   const handleCancel = () => {
     fetchMentorData();
     setIsEditing(false);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addDomain();
-    }
   };
 
   useEffect(() => {
@@ -253,7 +248,10 @@ const MentorProfile = () => {
               <div className="text-center">
                 <div className="relative inline-block">
                   <img
-                    src={formData.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=random`}
+                    src={formData.profileImage instanceof File 
+                      ? URL.createObjectURL(formData.profileImage) 
+                      : formData.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=random`
+                    }
                     alt="Profile"
                     className="w-24 h-24 rounded-full mx-auto border-4 border-white/30 shadow-lg object-cover"
                   />
@@ -264,34 +262,27 @@ const MentorProfile = () => {
                         className="hidden"
                         accept="image/*"
                         onChange={handleImageUpload}
+                        disabled={uploadingImage}
                       />
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                      {uploadingImage ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
                     </label>
                   )}
                 </div>
                 
                 <h2 className="text-xl font-bold mt-4">{formData.name}</h2>
                 <p className="text-blue-100 mt-1">{formData.experience || 0} years of experience</p>
-                
-                <div className="flex flex-wrap justify-center gap-2 mt-4">
-                  {formData.domain.slice(0, 3).map((domain, index) => (
-                    <span key={index} className="bg-white/20 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                      {domain}
-                    </span>
-                  ))}
-                  {formData.domain.length === 0 && (
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                      No domains added
-                    </span>
-                  )}
-                </div>
 
                 <button
                   onClick={isEditing ? handleCancel : () => setIsEditing(true)}
-                  className="mt-6 w-full bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  disabled={saving || uploadingImage}
+                  className="mt-6 w-full bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isEditing ? (
                     <>
@@ -442,57 +433,12 @@ const MentorProfile = () => {
                 </div>
               </div>
 
-              {/* Domains Section */}
-              <div className="mt-8">
-                <label className="block text-lg font-semibold text-gray-900 mb-4">Areas of Expertise</label>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {formData.domain.map((domain, index) => (
-                    <span key={index} className="bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm flex items-center gap-2">
-                      {domain}
-                      {isEditing && (
-                        <button
-                          onClick={() => removeDomain(index)}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
-                          type="button"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </span>
-                  ))}
-                  {formData.domain.length === 0 && !isEditing && (
-                    <span className="text-gray-500 text-sm">No domains added yet</span>
-                  )}
-                </div>
-                
-                {isEditing && (
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newDomain}
-                      onChange={(e) => setNewDomain(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Add a domain (e.g., React, Node.js, Python)"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    />
-                    <button
-                      onClick={addDomain}
-                      disabled={!newDomain.trim()}
-                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                      type="button"
-                    >
-                      Add
-                    </button>
-                  </div>
-                )}
-              </div>
-
               {/* Save Buttons */}
               {isEditing && (
                 <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                   <button
                     onClick={handleSave}
-                    disabled={saving}
+                    disabled={saving || uploadingImage}
                     className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-lg hover:from-blue-700 hover:to-purple-800 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                   >
@@ -513,7 +459,7 @@ const MentorProfile = () => {
                   
                   <button
                     onClick={handleCancel}
-                    disabled={saving}
+                    disabled={saving || uploadingImage}
                     className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50"
                     type="button"
                   >
