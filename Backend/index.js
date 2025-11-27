@@ -14,6 +14,8 @@ import internRoutes from './routers/InternRoutes.js';
 // import MentorRoutes from './model/RegisterDB/mentorSchema.js';
 import MentorRoutes from './routers/MentorRoutes.js';
 
+import paymentRoutes from './route/PaymentRoute.js';
+
 
 
 dotenv.config();
@@ -29,6 +31,7 @@ app.use('/api', authRoutes);
 app.use('/api', internRoutes);
 app.use('/api', MentorRoutes);
 
+app.use("/api", paymentRoutes);
 
 
 

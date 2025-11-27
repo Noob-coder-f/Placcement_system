@@ -69,7 +69,5 @@ hiringTeamFeedback: [
 
 }, { timestamps: true });
 
-const Intern = mongoose.model("Intern", internSchema, "Intern");
+const Intern = mongoose.models.Intern || mongoose.model("Intern", internSchema, "Intern");
 export default Intern;
-
-// export default mongoose.model("Intern", internSchema, "Intern");
