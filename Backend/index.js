@@ -10,7 +10,11 @@ import connectDB from './config/db.js';
 
 
 import authRoutes from './routers/authRouters.js';
-import internRoutes from './routers/InternRoutes.js'
+import internRoutes from './routers/InternRoutes.js';
+// import MentorRoutes from './model/RegisterDB/mentorSchema.js';
+import MentorRoutes from './routers/MentorRoutes.js';
+
+import paymentRoutes from './routers/PaymentRoutes.js';
 
 
 
@@ -25,11 +29,16 @@ app.use(cookieParser());
 
 app.use('/api', authRoutes);
 app.use('/api', internRoutes);
+app.use('/api', MentorRoutes);
 
+app.use("/api", paymentRoutes);
 
 
 
 connectDB();
+
+//Routes
+app.use('/api', internRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

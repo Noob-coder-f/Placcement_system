@@ -1,5 +1,7 @@
 // components/Classes.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Classes = () => {
   const [classes, setClasses] = useState([
@@ -53,11 +55,46 @@ const Classes = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [enrolledClasses, setEnrolledClasses] = useState([]);
 
+  const [planInfo, setPlanInfo] = useState(null);
+  const [loadingPlan, setLoadingPlan] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+
+  const navigate = useNavigate();
+
   const categories = ['All', 'Frontend', 'Backend', 'Architecture', 'Database', 'Mobile'];
 
   const filteredClasses = selectedCategory === 'All' 
     ? classes 
     : classes.filter(cls => cls.category === selectedCategory);
+
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const { data } = await axios.get('/api/payments/current-plan');
+        if (data.success) {
+          setPlanInfo(data);
+
+          // ✅ Define your access rule here:
+          // Option A: any non-NONE plan:
+          const paidPlan = data.planCategory && data.planCategory !== 'NONE';
+          // Option B (optional): require at least 1 jobCredit:
+          // const paidPlan = data.planCategory !== 'NONE' && data.jobCredits > 0;
+
+          setHasAccess(paidPlan);
+        } else {
+          setHasAccess(false);
+        }
+      } catch (err) {
+        console.error('Error fetching plan info:', err);
+        setHasAccess(false);
+      } finally {
+        setLoadingPlan(false);
+      }
+    };
+
+    fetchPlan();
+  }, []);
+
 
   const handleEnroll = async (classId) => {
     const classItem = classes.find(cls => cls.id === classId);
@@ -97,6 +134,50 @@ const Classes = () => {
   const isUpcoming = (classDate) => {
     return new Date(classDate) > new Date();
   };
+
+  // ⏳ While checking plan
+  if (loadingPlan) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking your subscription...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ❌ No active plan → show upgrade screen instead of classes
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-md border border-gray-200 p-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">
+            Upgrade Required
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You need an active plan to access live classes. 
+            Upgrade your plan to unlock all live sessions and premium content.
+          </p>
+
+          <button
+            onClick={() => navigate('/payments')}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors mb-3"
+          >
+            Go to Plans & Pricing
+          </button>
+
+          {planInfo && (
+            <p className="text-xs text-gray-500">
+              Current status: <span className="font-semibold">{planInfo.planCategory || 'NONE'}</span>
+              {planInfo.jobCredits !== undefined && ` • Job Credits: ${planInfo.jobCredits}`}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
