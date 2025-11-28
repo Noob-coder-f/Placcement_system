@@ -25,7 +25,6 @@ const internSchema = new mongoose.Schema({
   profileImage: { type: String },
 
   // 🧩 Internship Details
-  appliedFor: [{ name: { type: String } }],
 
   mentorFeedback: [
     {
@@ -45,7 +44,6 @@ const internSchema = new mongoose.Schema({
     }
   ],
 
-  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
 
   // 🌟 Paid Plans (Silver / Gold / Platinum)
   planCategory: {
@@ -56,9 +54,6 @@ const internSchema = new mongoose.Schema({
 
   // 🎯 Job Credits After Buying a Plan
   jobCredits: { type: Number, default: 0 },  // e.g. SILVER = 10, GOLD = 25, PLATINUM = 50
-
-  // 📚 Lecture Access Always Full
-  lectureAccess: { type: Boolean, default: true }, // no restriction
 
   // 🔄 Credit Usage History
   creditHistory: [

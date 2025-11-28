@@ -151,24 +151,13 @@ const Dashboard = () => {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-200/60 bg-white/50 backdrop-blur-sm mt-8">
+        <footer className="border-t border-black bg-white/50 backdrop-blur-sm mt-8">
           <div className="px-6 py-4">
             <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <span>© 2024 InternConnect. All rights reserved.</span>
+              <div className="flex items-center space-x-4 text-sm text-gray-800">
+                <span>© {new Date().getFullYear()} Graphura India Private Limited. All rights reserved.</span>
                 <span className="hidden md:inline">•</span>
                 <span className="hidden md:inline">Built with ❤️ for aspiring interns</span>
-              </div>
-              <div className="flex items-center space-x-6 mt-2 md:mt-0">
-                <button className="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  Privacy Policy
-                </button>
-                <button className="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  Terms of Service
-                </button>
-                <button className="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  Help Center
-                </button>
               </div>
             </div>
           </div>

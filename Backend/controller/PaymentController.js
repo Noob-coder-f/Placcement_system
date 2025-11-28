@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import Intern from "../model/internSchema.js";
+import Intern from "../model/RegisterDB/internSchema.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,

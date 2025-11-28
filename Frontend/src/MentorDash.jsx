@@ -13,6 +13,7 @@ import {
   FileText,
   Eye,
   Download,
+  LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -40,6 +41,17 @@ const MentorDashboard = () => {
   // ===============================
   const getToken = () => {
     return localStorage.getItem("mentorToken") || localStorage.getItem("token");
+  };
+
+  // ===============================
+  // LOGOUT FUNCTION
+  // ===============================
+  const handleLogout = () => {
+    // Clear all tokens and user data from localStorage
+    localStorage.removeItem("mentorToken");
+
+      // Redirect to home page
+    navigate("/mentor-login");
   };
 
   // ===============================
@@ -296,14 +308,26 @@ const MentorDashboard = () => {
             );
           })}
 
-          {/* Back to Home Button */}
-          <button
-            className="w-full flex items-center p-3 rounded-lg mb-1 hover:bg-white/5 mt-4 border-t border-gray-700 pt-4"
-            onClick={handleBackToHome}
-          >
-            <Home className="mr-3 text-gray-400" size={20} />
-            <span className="text-gray-300">Back to Home</span>
-          </button>
+          {/* Action Buttons */}
+          <div className="mt-4 border-t border-gray-700 pt-4 space-y-2">
+            {/* Back to Home Button */}
+            <button
+              className="w-full flex items-center p-3 rounded-lg hover:bg-white/5 transition-colors"
+              onClick={handleBackToHome}
+            >
+              <Home className="mr-3 text-gray-400" size={20} />
+              <span className="text-gray-300">Back to Home</span>
+            </button>
+
+            {/* Logout Button */}
+            <button
+              className="w-full flex items-center p-3 rounded-lg hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-3" size={20} />
+              <span>Logout</span>
+            </button>
+          </div>
         </nav>
       </div>
     );
@@ -347,6 +371,15 @@ const MentorDashboard = () => {
             </h1>
             
             <div className="flex items-center space-x-4">
+              {/* Logout Button in Header */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+
               {/* Back to Home Button in Header */}
               <button
                 onClick={handleBackToHome}
