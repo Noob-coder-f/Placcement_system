@@ -1,4 +1,5 @@
 import Intern from "../model/RegisterDB/internSchema.js"
+import JobPost from "../model/JobPostDB/JobSchema.js"
 import Class from "../model/MentorDB/classes.js"
 import StudyMaterial from "../model/MentorDB/studyMaterial.js"
 import VideoLecture from "../model/MentorDB/VideoLectures.js"
@@ -217,3 +218,103 @@ export const getVideoLectures = async (req, res) => {
     });
   }
 };
+
+
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const internId = req.user.id;
+
+    const intern = await Intern.findById(internId).select(
+      "mentorFeedback hiringTeamFeedback jobCredits creditHistory"
+    );
+
+    if (!intern) {
+      return res.status(404).json({ message: "Intern not found" });
+    }
+
+    const jobsApplied = intern.creditHistory.filter(
+      item => item.action === "APPLIED JOB"
+    ).length;
+
+    res.status(200).json({
+      jobsApplied,
+      freeApplicationsLeft: intern.jobCredits,
+      mentorFeedbackCount: intern.mentorFeedback.length,
+      hiringFeedbackCount: intern.hiringTeamFeedback.length,
+      studyProgress: 0, // you can add later
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to load dashboard stats" });
+  }
+};
+
+
+
+export const getRecentJobPosts = async (req, res) => {
+  try {
+    const jobs = await JobPost.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("title companyName status createdAt");
+
+    const formattedJobs = jobs.map(job => ({
+      id: job._id,
+      title: job.title,
+      company: job.companyName,
+      status: job.status.toLowerCase(), // "open"
+      appliedDate: job.createdAt,       // frontend already formats it
+    }));
+
+    res.status(200).json(formattedJobs);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to load recent jobs" });
+  }
+};
+
+export const getRecentFeedback = async (req, res) => {
+  try {
+    const internId = req.user.id;
+
+    const intern = await Intern.findById(internId).select(
+      "mentorFeedback hiringTeamFeedback"
+    );
+
+    if (!intern) {
+      return res.status(404).json({ message: "Intern not found" });
+    }
+
+    res.status(200).json({
+      mentorFeedback: intern.mentorFeedback.map(item => ({
+        _id: item._id,
+        comment: item.comment,
+        rating: item.rating,
+        date: item.date,
+        improvementSuggestions: item.improvementSuggestions || "",
+        actionableItems: item.actionableItems || [],
+        followUpRequired: item.followUpRequired || false,
+        sentiment: item.sentiment || "neutral",
+        strengths: item.strengths || [],
+        areasForImprovement: item.areasForImprovement || []
+      })),
+
+      hiringTeamFeedback: intern.hiringTeamFeedback.map(item => ({
+        _id: item._id,
+        comment: item.comment,
+        rating: item.rating,
+        date: item.date,
+        company: item.company,
+        improvementSuggestions: item.improvementSuggestions || "",
+        actionableItems: item.actionableItems || [],
+        followUpRequired: item.followUpRequired || false,
+        sentiment: item.sentiment || "neutral",
+        strengths: item.strengths || [],
+        areasForImprovement: item.areasForImprovement || []
+      }))
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to load feedback" });
+  }
+};
+

@@ -1,7 +1,7 @@
 // components/VideoLectures.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { GraduationCap, Sparkles, CheckCircle } from 'lucide-react';
 
 const VideoLectures = () => {
   const [videos, setVideos] = useState([]);
@@ -12,8 +12,6 @@ const VideoLectures = () => {
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  const navigate = useNavigate();
 
   // Fetch user's plan information
   useEffect(() => {
@@ -107,32 +105,49 @@ const VideoLectures = () => {
   // ❌ No active plan → show upgrade screen
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-6">
-        <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center">
-          <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <span className="text-3xl text-white">🎥</span>
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Upgrade Required
-          </h1>
-          <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-            Unlock premium video lectures, expert-led content, and comprehensive learning materials by upgrading your plan.
-          </p>
-
-          <button
-            onClick={() => navigate('/payments')}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-lg mb-6"
-          >
-            View Plans & Pricing
-          </button>
-
-          {planInfo && (
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-              <p className="text-sm text-gray-600">
-                Current plan: <span className="font-semibold text-gray-800">{planInfo.planCategory || 'Free Tier'}</span>
-              </p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+          <div className="relative h-48 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black opacity-10"></div>
+            <div className="relative z-10 text-center">
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/30">
+                <GraduationCap className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white">Premium Video Courses</h1>
             </div>
-          )}
+          </div>
+          
+          <div className="p-8">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Sparkles className="w-5 h-5 text-yellow-500" />
+              <span className="text-sm font-medium text-yellow-600">PREMIUM FEATURE</span>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
+              Unlock Premium Video Courses
+            </h2>
+            
+            <p className="text-gray-600 text-center mb-8">
+              Access a curated library of video lectures from industry experts by upgrading to a premium plan.
+            </p>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-gray-700">High-quality video lectures</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-gray-700">Downloadable resources</span>
+              </div>
+            </div>
+
+            {planInfo && (
+              <p className="text-center text-sm text-gray-500">
+                Current plan: <span className="font-semibold text-gray-700">{planInfo.planCategory || 'Free Tier'}</span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     );

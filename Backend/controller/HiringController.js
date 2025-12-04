@@ -1,5 +1,6 @@
 import HiringTeam from "../model/RegisterDB/hiringSchema.js";
 import JobPost from "../model/JobPostDB/JobSchema.js";
+import Intern from "../model/RegisterDB/internSchema.js";
 
 
 export const getProfile = async (req, res) => {
@@ -248,6 +249,70 @@ export const updateJobStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+
+export const getAllInterns = async (req, res) => {
+  try {
+    const interns = await Intern.find({ isActive: true })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: interns
+    });
+  } catch (error) {
+    console.error("Get Interns Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch interns"
+    });
+  }
+};
+
+
+export const submitHiringFeedback = async (req, res) => {
+  try {
+    const { rating, comment, improvementSuggestions } = req.body;
+    const internId = req.params.id;
+
+    if (!rating) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating is required"
+      });
+    }
+
+    const intern = await Intern.findById(internId);
+    if (!intern) {
+      return res.status(404).json({
+        success: false,
+        message: "Intern not found"
+      });
+    }
+
+    intern.hiringTeamFeedback.push({
+      rating,
+      comment,
+      improvementSuggestions
+    });
+
+    await intern.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Feedback submitted successfully"
+    });
+
+  } catch (error) {
+    console.error("Feedback Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit feedback"
     });
   }
 };

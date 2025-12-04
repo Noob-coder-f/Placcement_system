@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   LayoutDashboard,
   User,
@@ -8,15 +10,27 @@ import {
   Home,
   ChevronRight,
   Menu,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Award,
+  ArrowUpRight,
+  ArrowDownRight,
+  MoreVertical,
+  Eye,
+  CheckCircle,
+  Clock as ClockIcon,
+  XCircle,
+  Star,
+  Target,
+  RefreshCw,
+  GraduationCap,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-// Import your components (you'll need to create these)
+// Import your page components (you'll need to create these)
 import Profile from "./HrPages/Profile";
 import JobPosts from "./HrPages/JobPosts";
 import UsersPage from "./HrPages/Users";
-import DashboardOverview from "./HrPages/DashboardOverview";
 
 const HiringTeamDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -26,160 +40,111 @@ const HiringTeamDashboard = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-  const [dashboardData, setDashboardData] = useState(null);
+  const [allJobs, setAllJobs] = useState([]);
+  const [allCandidates, setAllCandidates] = useState([]);
   const [recentJobs, setRecentJobs] = useState([]);
   const [recentCandidates, setRecentCandidates] = useState([]);
   
   // ===============================
-  // TOKEN
+  // TOKEN & NAVIGATION
   // ===============================
   const getToken = () => {
-    return localStorage.getItem("HiringTeamToken")
+    return localStorage.getItem("HiringTeamToken");
   };
 
-  // ===============================
-  // LOGOUT FUNCTION
-  // ===============================
   const handleLogout = () => {
     localStorage.removeItem("HiringTeamToken");
-    navigate("/hiring-login");
+    navigate("/hiring-team-login");
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
   };
 
   // ===============================
-  // FETCH USER PROFILE
+  // DATA FETCHING
   // ===============================
   const fetchUserProfile = async () => {
     try {
       const token = getToken();
-      if (!token) throw new Error("No token found");
-
+      if (!token) {
+        navigate("/hiring-team-login");
+        return;
+      }
       const res = await axios.get("/api/hiring/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUser(res.data.data);
+      if (res.data.success) {
+        setUser(res.data.data);
+      }
     } catch (err) {
       console.error("Profile Load Failed", err);
     }
   };
 
-  // ===============================
-  // FETCH DASHBOARD DATA
-  // ===============================
-  const fetchDashboardData = async () => {
-    try {
-      const token = getToken();
-      if (!token) throw new Error("No token found");
-
-      const res = await axios.get("/api/hiring/dashboard", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setDashboardData(res.data);
-    } catch (err) {
-      console.error("Dashboard API Failed", err);
-      // Fallback data
-      setDashboardData({
-        stats: {
-          totalJobs: 24,
-          activeJobs: 12,
-          candidates: 156,
-          interviews: 45,
-          pending: 27,
-        },
-        metrics: {
-          timeToHire: 18,
-          candidateSatisfaction: 4.5,
-          offerAcceptanceRate: 92,
-        },
-        recentActivity: [
-          { id: 1, action: "New candidate applied", time: "2 hours ago" },
-          { id: 2, action: "Interview scheduled", time: "4 hours ago" },
-          { id: 3, action: "Job posted", time: "1 day ago" },
-        ],
-      });
-    }
-  };
-
-  // ===============================
-  // FETCH RECENT JOB POSTS
-  // ===============================
-  const fetchRecentJobs = async () => {
+  const fetchAllJobs = async () => {
     try {
       const token = getToken();
       if (!token) return;
 
-      const res = await axios.get("/api/hiring/jobs/recent", {
+      const res = await axios.get("/api/hiring/jobs", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRecentJobs(res.data);
-    } catch (err) {
-      console.error("Failed to fetch recent jobs:", err);
+      if (res.data.success) {
+        const jobs = res.data.data || [];
+        setAllJobs(jobs);
+        // Get only 5 most recent jobs for display
+        setRecentJobs(jobs.slice(0, 5));
+      }
+    } catch (error) {
+      console.error("Failed to fetch jobs:", error);
+      setAllJobs([]);
+      setRecentJobs([]);
     }
   };
 
-  // ===============================
-  // FETCH RECENT CANDIDATES
-  // ===============================
-  const fetchRecentCandidates = async () => {
+  const fetchAllCandidates = async () => {
     try {
       const token = getToken();
       if (!token) return;
 
-      const res = await axios.get("/api/hiring/candidates/recent", {
+      const res = await axios.get("/api/hiring/interns", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRecentCandidates(res.data);
-    } catch (err) {
-      console.error("Failed to fetch recent candidates:", err);
-      // Fallback data
-      setRecentCandidates([
-        {
-          id: 1,
-          name: "Alex Johnson",
-          email: "alex@example.com",
-          position: "Senior Frontend Developer",
-          status: "Interview",
-          stage: "Technical Round",
-          date: "2024-03-15",
-          rating: 4.5,
-          avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-        },
-        {
-          id: 2,
-          name: "Sarah Miller",
-          email: "sarah@example.com",
-          position: "Product Manager",
+      if (res.data.success) {
+        const interns = res.data.data || [];
+        const candidates = interns.map(intern => ({
+          _id: intern._id,
+          name: intern.name,
+          avatar: intern.profileImage,
+          position: intern.domain,
+          college: intern.college,
           status: "New",
           stage: "Resume Review",
-          date: "2024-03-14",
-          rating: 4.2,
-          avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-        },
-        {
-          id: 3,
-          name: "Michael Chen",
-          email: "michael@example.com",
-          position: "UX Designer",
-          status: "Offer",
-          stage: "Final Round",
-          date: "2024-03-13",
-          rating: 4.8,
-          avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-        },
-      ]);
+          email: intern.email,
+          appliedDate: intern.createdAt,
+          rating: intern.hiringTeamFeedback?.length > 0 
+            ? (intern.hiringTeamFeedback.reduce((sum, f) => sum + f.rating, 0) / intern.hiringTeamFeedback.length).toFixed(1)
+            : "No rating"
+        }));
+        setAllCandidates(candidates);
+        // Get only 5 most recent candidates for display
+        setRecentCandidates(candidates.slice(0, 5));
+      }
+    } catch (error) {
+      console.error("Failed to fetch candidates:", error);
+      setAllCandidates([]);
+      setRecentCandidates([]);
     }
   };
 
-  // ===============================
-  // LOAD ALL DATA
-  // ===============================
   const loadData = async () => {
     setLoading(true);
     try {
       await Promise.all([
         fetchUserProfile(),
-        fetchDashboardData(),
-        fetchRecentJobs(),
-        fetchRecentCandidates(),
+        fetchAllJobs(),
+        fetchAllCandidates(),
       ]);
     } catch (error) {
       console.error("Error loading data:", error);
@@ -189,7 +154,7 @@ const HiringTeamDashboard = () => {
   };
 
   // ===============================
-  // RESIZE LISTENER + DATA LOAD
+  // USE EFFECTS
   // ===============================
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -200,53 +165,99 @@ const HiringTeamDashboard = () => {
   }, []);
 
   // ===============================
-  // BACK TO HOME FUNCTION
-  // ===============================
-  const handleBackToHome = () => {
-    navigate("/");
-  };
-
-  // ===============================
-  // FORMAT DATE
-  // ===============================
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  // ===============================
-  // GET STATUS COLOR
+  // UTILITY FUNCTIONS
   // ===============================
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'active':
-      case 'interview':
-      case 'offer':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-      case 'new':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'closed':
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
+      case "open":
+      case "new":
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "closed":
+      case "rejected":
+        return "bg-red-100 text-red-800";
+      case "review":
+        return "bg-yellow-100 text-yellow-800";
+      case "interview":
+        return "bg-purple-100 text-purple-800";
+      case "hired":
+        return "bg-emerald-100 text-emerald-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
+
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case "open":
+      case "active":
+        return <CheckCircle size={14} />;
+      case "closed":
+        return <XCircle size={14} />;
+      case "new":
+        return <ClockIcon size={14} />;
+      default:
+        return null;
+    }
+  };
+
+  // ===============================
+  // DASHBOARD STATS (Using ALL data for counts)
+  // ===============================
+  const mainStats = [
+    { 
+      label: "Total Jobs", 
+      value: allJobs.length, // Use ALL jobs count
+      icon: Briefcase, 
+      color: "#09435F",
+      bgColor: "bg-[#09435F]/10",
+      onClick: () => setActivePage("jobposts")
+    },
+    { 
+      label: "Total Candidates", 
+      value: allCandidates.length, // Use ALL candidates count
+      icon: Users, 
+      color: "#2E84AE",
+      bgColor: "bg-[#2E84AE]/10",
+      onClick: () => setActivePage("users")
+    },
+    { 
+      label: "Open Positions", 
+      value: allJobs.filter(j => j.status === "Open").length, // Use ALL jobs for count
+      icon: Award, 
+      color: "#2E84AE",
+      bgColor: "bg-[#CDE7F4]/20"
+    },
+    { 
+      label: "Top Rated", 
+      value: allCandidates.filter(c => c.rating && c.rating > 4).length, // Use ALL candidates for count
+      icon: Star, 
+      color: "#09435F",
+      bgColor: "bg-[#09435F]/10"
+    },
+  ];
 
   // ===============================
   // PAGE RENDERING
   // ===============================
   const renderPage = () => {
-    if (loading) {
+    if (loading && activePage === "dashboard") {
       return (
-        <div className="flex items-center justify-center min-h-96">
-          <div className="animate-spin w-12 h-12 border-b-2 border-blue-600 rounded-full"></div>
-          <p className="ml-4 text-gray-600">Loading Dashboard...</p>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-64 mt-2 animate-pulse"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -259,19 +270,183 @@ const HiringTeamDashboard = () => {
       case "users":
         return <UsersPage />;
       default:
-        return (
-          <DashboardOverview 
-            dashboardData={dashboardData} 
-            user={user}
-            recentJobs={recentJobs}
-            recentCandidates={recentCandidates}
-            onJobPostsClick={() => setActivePage("jobposts")}
-            onUsersClick={() => setActivePage("users")}
-            formatDate={formatDate}
-            getStatusColor={getStatusColor}
-          />
-        );
+        return renderDashboard();
     }
+  };
+
+  // ===============================
+  // DASHBOARD COMPONENT
+  // ===============================
+  const renderDashboard = () => {
+    return (
+      <div className="space-y-6">
+        {/* Header with Time Range */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-[#09435F]">Dashboard Overview</h1>
+            <p className="text-gray-600">
+              Welcome back, {user?.name || "Hiring Manager"}. Here's your hiring performance
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={loadData}
+              className="flex items-center space-x-2 px-4 py-2 bg-[#2E84AE] text-white rounded-lg hover:bg-[#09435F] transition-colors"
+            >
+              <RefreshCw size={18} />
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Main Stats - Showing ALL data counts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {mainStats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div 
+                key={index} 
+                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
+                onClick={stat.onClick}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={`p-3 rounded-lg ${stat.bgColor}`} style={{ color: stat.color }}>
+                    <Icon size={24} />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-bold text-[#09435F] mt-4">{stat.value}</h3>
+                <p className="text-gray-600">{stat.label}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Recent Jobs & Candidates - Showing only 5 each */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Jobs - Showing 5 only */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-[#09435F] flex items-center">
+                  <Briefcase className="mr-2" />
+                  Recent Job Posts
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Showing {recentJobs.length} of {allJobs.length} total jobs
+                </p>
+              </div>
+              <button 
+                onClick={() => setActivePage("jobposts")}
+                className="text-[#2E84AE] hover:text-[#09435F] text-sm font-medium flex items-center"
+              >
+                View All <ChevronRight size={16} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {recentJobs.length > 0 ? (
+                recentJobs.map((job) => (
+                  <div key={job._id} className="flex items-center justify-between p-3 hover:bg-[#CDE7F4]/20 rounded-lg transition-colors">
+                    <div>
+                      <h4 className="font-medium text-[#09435F]">{job.title}</h4>
+                      <div className="flex items-center text-sm text-gray-500 mt-1">
+                        <span className="px-2 py-1 bg-gray-100 rounded text-xs mr-2">{job.department || "General"}</span>
+                        <span>{job.location || "Remote"}</span>
+                        <span className="mx-2">•</span>
+                        <span>{job.type || "Full-time"}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <div className="font-bold text-[#2E84AE]">{job.applicants || 0}</div>
+                        <div className="text-xs text-gray-500">Applicants</div>
+                      </div>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(job.status)}`}>
+                        {getStatusIcon(job.status)}
+                        <span className="ml-1">{job.status || "Open"}</span>
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Briefcase className="mx-auto text-gray-400 mb-3" size={48} />
+                  <p className="text-gray-500">No job posts yet</p>
+                  <button 
+                    onClick={() => setActivePage("jobposts")}
+                    className="mt-3 text-[#2E84AE] hover:text-[#09435F] text-sm font-medium"
+                  >
+                    Create your first job post
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Candidates - Showing 5 only */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-[#09435F] flex items-center">
+                  <Users className="mr-2" />
+                  Recent Interns
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Showing {recentCandidates.length} of {allCandidates.length} total interns
+                </p>
+              </div>
+              <button 
+                onClick={() => setActivePage("users")}
+                className="text-[#2E84AE] hover:text-[#09435F] text-sm font-medium flex items-center"
+              >
+                View All <ChevronRight size={16} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {recentCandidates.length > 0 ? (
+                recentCandidates.map((candidate) => (
+                  <div key={candidate._id} className="flex items-center p-3 hover:bg-[#CDE7F4]/20 rounded-lg transition-colors">
+                    <img
+                      src={candidate.avatar || `https://ui-avatars.com/api/?name=${candidate.name}&background=2E84AE&color=fff`}
+                      alt={candidate.name}
+                      className="w-10 h-10 rounded-full mr-3"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-[#09435F]">{candidate.name}</h4>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <GraduationCap size={14} className="mr-1" />
+                        <span>{candidate.college || "Unknown College"}</span>
+                        <span className="mx-2">•</span>
+                        <span>{candidate.position || "Intern"}</span>
+                      </div>
+                      {candidate.rating && candidate.rating !== "No rating" && (
+                        <div className="flex items-center mt-1">
+                          <Star size={12} className="text-yellow-400 fill-yellow-400 mr-1" />
+                          <span className="text-xs text-gray-600">{candidate.rating}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(candidate.status)}`}>
+                        {getStatusIcon(candidate.status)}
+                        <span className="ml-1">{candidate.status}</span>
+                      </span>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {new Date(candidate.appliedDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <User className="mx-auto text-gray-400 mb-3" size={48} />
+                  <p className="text-gray-500">No interns registered yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // ===============================
@@ -284,9 +459,6 @@ const HiringTeamDashboard = () => {
     { key: "users", label: "Candidates", icon: Users, color: "text-indigo-500" },
   ];
 
-  // ===============================
-  // SIDEBAR COMPONENT
-  // ===============================
   const Sidebar = () => {
     const currentUser = user || {
       name: "John Hiring Manager",
@@ -299,9 +471,9 @@ const HiringTeamDashboard = () => {
         {/* Header */}
         <div className="p-4 bg-gradient-to-r from-blue-700 to-indigo-800">
           <div className="flex items-center">
-            <Briefcase className="mr-2" size={24} />
+            <img src="/Graphura.jpg" alt="Graphura Logo" className="w-10 h-10 mr-2 rounded-full" />
             <div>
-              <h1 className="font-bold text-lg">TalentHub</h1>
+              <h1 className="font-bold text-lg">Graphura</h1>
               <p className="text-xs text-blue-100">Hiring Dashboard</p>
             </div>
           </div>
@@ -369,8 +541,6 @@ const HiringTeamDashboard = () => {
             </button>
           </div>
         </nav>
-
-
       </div>
     );
   };
@@ -415,10 +585,6 @@ const HiringTeamDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Removed: Search Bar */}
-              
-              {/* Removed: New Job Post Button */}
-
               {/* Logout Button */}
               <button
                 onClick={handleLogout}

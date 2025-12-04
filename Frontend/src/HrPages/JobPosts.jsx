@@ -701,7 +701,7 @@ const handleUpdateJob = async () => {
     if (!showViewModal || !selectedJob) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
             <div>
@@ -848,7 +848,7 @@ const handleUpdateJob = async () => {
     if (!showStatusModal || !selectedJob) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
           <div className="p-6">
             <div className="flex items-center mb-4">
@@ -1744,7 +1744,7 @@ const handleUpdateJob = async () => {
     ];
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-y-auto">
           {/* Wizard Header */}
           <div className="sticky top-0 bg-white border-b px-6 py-4">

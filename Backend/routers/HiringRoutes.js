@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { getProfile, updateProfile, uploadProfileImage, createJobPost, getAllJobPosts, updateJob, getJobById, updateJobStatus } from "../controller/HiringController.js";
+import { getProfile, updateProfile, uploadProfileImage, createJobPost, getAllJobPosts, updateJob, getJobById, submitHiringFeedback, updateJobStatus, getAllInterns } from "../controller/HiringController.js";
 import upload from "../middlewares/upload.js";
 
 const router = express.Router();
@@ -17,6 +17,9 @@ router.get("/hiring/jobs/:id", authMiddleware, getJobById);
 
 
 router.patch("/hiring/jobs/:id/status", authMiddleware, updateJobStatus);
+
+router.get("/hiring/interns", authMiddleware, getAllInterns);
+router.post("/hiring/interns/:id/feedback", authMiddleware, submitHiringFeedback);
 
 
 export default router;
