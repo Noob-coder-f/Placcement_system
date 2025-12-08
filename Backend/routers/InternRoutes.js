@@ -12,7 +12,9 @@ import {
     getDashboardStats,
     
     getRecentFeedback,
-    getRecentJobPosts
+    getRecentJobPosts,
+
+    getInternJobApplicationForm
 } from "../controller/InternController.js"
 import { authMiddleware } from "../middlewares/authMiddleware.js"
 
@@ -35,6 +37,7 @@ router.get("/intern/dashboard-stats", authMiddleware, getDashboardStats)
 router.get("/intern/recent-feedback", authMiddleware, getRecentFeedback)
 router.get("/intern/recent-job-posts", authMiddleware, getRecentJobPosts)
 
+router.get("/intern/jobs/:jobId/application-form", authMiddleware, getInternJobApplicationForm)
 
 
 export default router

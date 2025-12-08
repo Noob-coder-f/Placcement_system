@@ -825,6 +825,7 @@ const RegisterPage = () => {
                                         type="url"
                                         placeholder="Link to your resume (Google Drive, etc.)"
                                         value={formData.resumeUrl}
+                                        required
                                         onChange={(e) => handleInputChange("resumeUrl", e.target.value)}
                                         className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                                     />

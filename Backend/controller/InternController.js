@@ -1,6 +1,7 @@
 import Intern from "../model/RegisterDB/internSchema.js"
 import JobPost from "../model/JobPostDB/JobSchema.js"
 import Class from "../model/MentorDB/classes.js"
+import JobApplication from "../model/JobPostDB/JobApplication.js"
 import StudyMaterial from "../model/MentorDB/studyMaterial.js"
 import VideoLecture from "../model/MentorDB/VideoLectures.js"
 
@@ -318,3 +319,49 @@ export const getRecentFeedback = async (req, res) => {
   }
 };
 
+
+export const getInternJobApplicationForm = async (req, res) => {
+  try {
+    const job = await JobPost.findById(req.params.jobId);
+    
+    if (!job) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Job not found' 
+      });
+    }
+    
+    // Check if job is still open
+    if (job.status !== 'Open' || !job.isActive) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'This job is no longer accepting applications' 
+      });
+    }
+    
+    // Check if user has already applied
+    const existingApplication = await JobApplication.findOne({
+      jobId: job._id,
+      userId: req.user.id
+    });
+    
+    if (existingApplication) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'You have already applied for this job' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        customFields: job.customFields || []
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch application form' 
+    });
+  }
+}

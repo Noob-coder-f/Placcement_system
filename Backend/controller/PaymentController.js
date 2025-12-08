@@ -10,13 +10,26 @@ const razorpay = new Razorpay({
 
 export const purchasePlan = async (req, res) => {
   try {
-    const internId = req.user.id; 
+    const internId = req.user.id;
     const { planId, planCategory, amount, credits } = req.body;
 
     if (!planId || !planCategory || !amount || !credits) {
       return res
         .status(400)
         .json({ success: false, message: "Plan details are missing" });
+    }
+
+    const intern = await Intern.findById(internId);
+
+    const hasPurchasedSilver = intern.paymentHistory.some(
+      payment => payment.planPurchased === "SILVER"
+    );
+
+    if (hasPurchasedSilver) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already purchased the SILVER plan"
+      });
     }
 
     // Razorpay needs amount in paise
@@ -161,5 +174,5 @@ export const getPaymentHistory = async (req, res) => {
   } catch (error) {
     console.error("Get Payment History Error:", error);
     return res.status(500).json({ success: false, message: "Error fetching payment history" });
-    }
+  }
 };

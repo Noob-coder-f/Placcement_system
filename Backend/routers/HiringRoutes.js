@@ -11,8 +11,10 @@ router.post("/hiring/profile/upload-image", authMiddleware, upload.single("profi
 
 
 router.post("/hiring/jobs", authMiddleware, createJobPost);
+
 router.get("/hiring/jobs", authMiddleware, getAllJobPosts);
 router.put("/hiring/jobs/:id", authMiddleware, updateJob);
+
 router.get("/hiring/jobs/:id", authMiddleware, getJobById);
 
 

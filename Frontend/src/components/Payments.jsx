@@ -27,12 +27,12 @@ const plans = [
   {
     id: 'silver',
     name: 'SILVER',
-    price: 199,
+    price: 1,
     duration: 'One-time purchase',
     category: 'SILVER',
-    credits: 10, // 🎯 Only difference
+    credits: 2, // 🎯 Only difference
     features: [
-      '10 job application credits',
+      '2 job application credits',
       'Full access to study materials',
       'Full access to all video lectures',
       'Email support'
@@ -42,7 +42,7 @@ const plans = [
   {
     id: 'gold',
     name: 'GOLD',
-    price: 299,
+    price: 499,
     duration: 'One-time purchase',
     category: 'GOLD',
     credits: 25, // 🎯 Only difference
