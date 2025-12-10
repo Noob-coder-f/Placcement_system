@@ -24,13 +24,13 @@ const Opening = () => {
 
  
         <div className="relative bg-gradient-to-r from-[#63B6DD] to-[#1C7EAC] 
-                        h-[110px] w-[340px] rounded flex items-center px-6 shadow-xl">
+                        h-[110px] md:w-[340px] w-[130px] rounded flex items-center px-6 shadow-xl">
           
          
           <div className="h-[60px] w-[3px] bg-white mr-4"></div>
 
          
-          <h3 className="text-white text-2xl font-semibold tracking-wide">
+          <h3 className="text-white md:text-2xl text-xs font-semibold tracking-wide">
             100+ &nbsp;Openings
           </h3>
         </div>
@@ -43,7 +43,7 @@ const Opening = () => {
                 key={i}
                 src={logo}
                 alt="brand"
-                className="h-19 w-19 object-contain drop-shadow-md"
+                className="md:h-19 md:w-19 w-15 h-15 object-contain drop-shadow-md "
               />
             ))}
           </div>

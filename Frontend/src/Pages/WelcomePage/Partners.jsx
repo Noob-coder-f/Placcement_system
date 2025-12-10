@@ -22,10 +22,10 @@ const Partners = () => {
         bg-opacity-30
       "
     >
-      <div className="lg:max-w-8xl mx-auto ml-8 ">
+      <div className="lg:max-w-8xl mx-auto md:ml-8 ">
 
       
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 ml-8 mb-12">
           Proud to be the partners with such Companies
         </h2>
 
@@ -39,7 +39,7 @@ const Partners = () => {
 
               
               <div className="
-                  w-[150px] h-[150px] rounded-2xl
+                  md:w-[150px] md:h-[150px] w-[100px] h-[100px] rounded-2xl
                   bg-white/50 backdrop-blur-md
                   border border-white/40 shadow-lg
                   flex justify-center items-center gap-10
@@ -47,7 +47,7 @@ const Partners = () => {
                 <img
                   src={p.img}
                   alt={p.name}
-                  className="w-24 h-24 object-contain"
+                  className="md:w-24 md:h-24 w-18 h-18 object-contain"
                 />
               </div>
 

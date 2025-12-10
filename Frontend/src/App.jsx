@@ -13,6 +13,7 @@ import Dashboard from './InternDash';
 import MentorDashboard from './MentorDash';
 import Payments from './components/Payments';
 import HiringTeamDashboard from './HRDash';
+import Course from './Pages/Course/course'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<WelcomePage/>} />
+        <Route path='/courses' element={<Course />}/>
          <Route path="/intern-login" element={<LoginPage/>} />
          <Route path="/register-intern" element={<RegisterPage/>} />
 

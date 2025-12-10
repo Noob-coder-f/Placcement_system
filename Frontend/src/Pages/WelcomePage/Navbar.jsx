@@ -16,19 +16,19 @@ const Navbar = () => {
   return (
     <nav className="
       fixed top-0 left-0 z-50
-      w-full md:w-[85%]
+      w-full md:w-[85%] h-25 md:h-18
       bg-white/80 backdrop-blur-xl
       border border-white/30
       shadow-[0_8px_30px_rgba(0,0,0,0.1)]
       md:rounded-full
       px-6 py-3
       flex items-center justify-between
-      mx-auto md:left-1/2 md:-translate-x-1/2 md:mt-8 mt-3
+      mx-auto md:left-1/2 md:-translate-x-1/2 md:mt-8 
     ">
       
     
       <Link to="/" className="flex items-center">
-        <img src="/GraphuraLogo.jpg" className="h-9 w-auto" alt="logo" />
+        <img src="/GraphuraLogo.jpg" className="h-15 w-auto" alt="logo" />
       </Link>
 
       

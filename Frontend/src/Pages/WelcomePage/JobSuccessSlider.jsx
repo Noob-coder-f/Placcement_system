@@ -30,79 +30,76 @@ const successSlides = [
 export default function JobSuccessSlider() {
   return ( 
     <section className="w-full px-4 py-12 bg-gradient-to-r from-[#63B6DD] via-[#9AD6F2] to-[#1C7EAC]">
-      <div className="max-w-7xl mx-auto">
+  <div className="max-w-7xl mx-auto">
+    <Swiper
+      modules={[Pagination, Autoplay]}
+      pagination={{ clickable: true }}
+      autoplay={{ delay: 3500, disableOnInteraction: false }}
+      loop={true}
+      slidesPerView={1}
+      className="pb-10"
+    >
+      {successSlides.map((slide, i) => (
+        <SwiperSlide key={i}>
+          <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 md:p-10 shadow-xl 
+                          flex flex-col md:flex-row items-center md:items-start gap-8
+                          min-h-[360px] relative overflow-hidden">
 
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3500, disableOnInteraction: false }}
-          loop={true}
-          slidesPerView={1}
-          className="pb-10"
-        >
-          {successSlides.map((slide, i) => (
-            <SwiperSlide key={i}>
-              <div className="bg-white/60 backdrop-blur-md 
-                              rounded-3xl p-6 md:p-10 shadow-xl min-h-[340px] 
-                              flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+            {/* Student Image */}
+            <img
+              src={slide.img}
+              alt="student"
+              className="w-[120px] sm:w-[150px] md:w-[200px] lg:w-[230px] drop-shadow-xl z-10"
+            />
 
-               
-                <img
-                  src={slide.img}
-                  alt="student"
-                  className="w-[160px] md:w-[200px] lg:w-[230px] drop-shadow-xl z-10"
-                />
-
-                
-                <div className="flex-1">
-                  
-                 
-                  <h2 className="text-2xl md:text-3xl lg:text-6xl lg:ml-40 font-extrabold text-[#093554] text-center md:text-left mb-5">
-                    I GOT THE JOB, GUYS!!!
-                  </h2>
-                <div className="flex gap-8">
-               
-                  <div className="flex items-center gap-4 bg-white/20 backdrop-blur-md 
-                                  border w-180 border-white/40 px-4 py-3 rounded-xl shadow-lg h-30">
-
-                    {/* Name + Message */}
-                    <div className="text-left">
-                      <div className="flex">
-                          <img src={slide.studentimg} className="h-10 w-10" />
-                      <p className="font-extrabold font-3xl text-[#093554] ml-7">{slide.name}</p>
-                      </div>
-                      
-                      <div>
-                        
-                      <p className="text-[#093554] text-sm md:text-base ml-22 mt-2">{slide.text}</p>
-                      </div>
-                      
-                    </div>
-
-                    
-
-                  </div>
-                  <div>
-                    <div className="bg-white/30 backdrop-blur-xl px-3 py-3 rounded-xl border border-white/40 shadow-md h-30 w-30">
-                      <img src={slide.companyLogo} className="h-10 w-10" />
-                    </div>
-                  </div>
-                  </div>
-
+            {/* Right Side */}
+            <div className="flex-1 w-full">
               
-                  <div className="flex justify-center md:justify-start mt-6">
-                    <button className="lg:ml-75 px-6 py-2 bg-white text-[#093554] font-semibold rounded-xl shadow-md hover:bg-gray-100">
-                      Enroll Now
-                    </button>
+              {/* Heading */}
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold 
+                             text-[#093554] text-center md:text-left mb-4 md:mb-6">
+                I GOT THE JOB, GUYS!!!
+              </h2>
+
+              {/* Name + Message + Logo Container */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+
+                {/* Name & Text */}
+                <div className="flex items-start gap-4 bg-white/20 backdrop-blur-md 
+                                border border-white/40 px-4 py-3 rounded-xl shadow-lg w-full sm:w-auto">
+
+                  <img src={slide.studentimg} className="h-10 w-10 rounded-full" />
+
+                  <div>
+                    <p className="font-extrabold text-[#093554] text-lg">{slide.name}</p>
+                    <p className="text-[#093554] text-sm mt-1">{slide.text}</p>
                   </div>
-
                 </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
 
-      </div>
-    </section>
+                {/* Company Logo */}
+                <div className="bg-white/30 backdrop-blur-xl px-4 py-4 rounded-xl 
+                                border border-white/40 shadow-md w-fit mx-auto sm:mx-0">
+                  <img src={slide.companyLogo} className="h-10 w-10 object-contain" />
+                </div>
+
+              </div>
+
+              {/* Button */}
+              <div className="flex justify-center md:justify-start mt-6">
+                <button className="px-6 py-2 bg-white text-[#093554] font-semibold 
+                                   rounded-xl shadow-md hover:bg-gray-100 transition">
+                  Enroll Now
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </div>
+</section>
+
   );
 }

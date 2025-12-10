@@ -10,10 +10,10 @@ import {
 const Footer = () => {
   return (
     <div>
-        <footer className="w-full bg-[#09435f] text-white pt-16 pb-10 relative">
+        <footer className="w-full bg-[#09435f] text-white pt-16 pb-10 relative overflow-y-auto pb-safe">
 
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-25  relative z-10">
 
        
         <div>
@@ -43,7 +43,7 @@ const Footer = () => {
         </div>
 
       
-        <div>
+        {/* <div>
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2 text-gray-200">
             <li>About Us</li>
@@ -63,7 +63,7 @@ const Footer = () => {
             <li>SiteMap</li>
             <li>FAQ</li>
           </ul>
-        </div>
+        </div> */}
 
      
         <div>

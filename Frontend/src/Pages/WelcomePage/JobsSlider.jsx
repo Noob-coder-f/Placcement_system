@@ -15,7 +15,7 @@ const JobsSlider = () => {
       company: "Unacademy (Sorting Hat Technologies Private Limited)",
       location: "Mumbai, Bandra",
       salary: "₹ 5,00,000 - 7,00,000",
-      logo: null,
+      logo: "/logos/udemy.png",
     },
     {
       id: 2,
@@ -24,7 +24,7 @@ const JobsSlider = () => {
       company: "Lenskart Solution Limited (Eyewear Solution)",
       location: "Gurgaon, Haryana",
       salary: "₹ 8,00,000 - 10,00,000",
-      logo: null,
+      logo: "/logos/lenskart.png",
     },
     {
       id: 3,
@@ -33,7 +33,7 @@ const JobsSlider = () => {
       company: "Unacademy (Sorting Hat Technologies Private Limited)",
       location: "Mumbai, Bandra",
       salary: "₹ 5,00,000 - 7,00,000",
-      logo: null,
+      logo: "/logos/udemy.png",
     },
     {
       id: 4,
@@ -42,7 +42,7 @@ const JobsSlider = () => {
       company: "Lenskart Solution Limited (Eyewear Solution)",
       location: "Gurgaon, Haryana",
       salary: "₹ 8,00,000 - 10,00,000",
-      logo: null,
+      logo: "/logos/lenskart.png",
     },
     {
       id: 1,
@@ -51,7 +51,7 @@ const JobsSlider = () => {
       company: "Unacademy (Sorting Hat Technologies Private Limited)",
       location: "Mumbai, Bandra",
       salary: "₹ 5,00,000 - 7,00,000",
-      logo: null,
+      logo: "/logos/udemy.png",
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ const JobsSlider = () => {
       company: "Lenskart Solution Limited (Eyewear Solution)",
       location: "Gurgaon, Haryana",
       salary: "₹ 8,00,000 - 10,00,000",
-      logo: null,
+      logo: "/logos/lenskart.png",
     },
     {
       id: 3,
@@ -69,7 +69,7 @@ const JobsSlider = () => {
       company: "Unacademy (Sorting Hat Technologies Private Limited)",
       location: "Mumbai, Bandra",
       salary: "₹ 5,00,000 - 7,00,000",
-      logo: null,
+      logo: "/logos/udemy.png",
     },
     {
       id: 4,
@@ -78,7 +78,7 @@ const JobsSlider = () => {
       company: "Lenskart Solution Limited (Eyewear Solution)",
       location: "Gurgaon, Haryana",
       salary: "₹ 8,00,000 - 10,00,000",
-      logo: null,
+      logo: "/logos/lenskart.png",
     },
   ];
 

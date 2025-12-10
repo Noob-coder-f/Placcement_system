@@ -14,19 +14,19 @@ const courses = [
     desc: "Understand the role, present yourself confidently, strong communication.",
     reviewed: "12+ students",
   },
-  {
-    title: "Content Creator",
-    rating: "4.6",
-    desc: "Focus on niche, quality, consistency, and audience engagement.",
-    reviewed: "15+ students",
-  },
+  // {
+  //   title: "Content Creator",
+  //   rating: "4.6",
+  //   desc: "Focus on niche, quality, consistency, and audience engagement.",
+  //   reviewed: "15+ students",
+  // },
  
-  {
-    title: "Group Discussion",
-    rating: "4.5",
-    desc: "Practice strategies to excel in group discussions during placements.",
-    reviewed: "8+ students",
-  },
+  // {
+  //   title: "Group Discussion",
+  //   rating: "4.5",
+  //   desc: "Practice strategies to excel in group discussions during placements.",
+  //   reviewed: "8+ students",
+  // },
 ];
 
 function Coursess() {
@@ -52,7 +52,7 @@ function Coursess() {
 
 
         {/* Cards row */}
-<div className="flex flex-wrap gap-6 justify-between">
+<div className="flex flex-wrap gap-6 ">
           {courses.map((course, idx) => (
             <div
               key={idx}

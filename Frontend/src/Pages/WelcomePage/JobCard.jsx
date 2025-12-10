@@ -4,8 +4,8 @@ import React from "react";
 export default function JobCard({ job }) {
   return (
     <div
-      className="snap-start mb-5 h-75  min-w-[320px] max-w-xs bg-white/60 backdrop-blur-mdborder border-white/20 rounded-2xl p-5 shadow-lg relative "
-      style={{ boxShadow: "0 8px 30px rgba(2,6,23,0.12)" }}
+      className="snap-start mb-5 h-75 ml-[0.8rem]  min-w-[320px] max-w-xs bg-transparent backdrop-blur-mdborder border-white/20 rounded-2xl p-5 shadow-lg relative hover:shadow-[0_24px_55px_rgba(15,23,42,0.35)] transition-shadow duration-300 max-w-[380px]:ml-[0.3rem] "
+      
     >
       
       <div className="absolute left-4 top-4">
@@ -21,12 +21,12 @@ export default function JobCard({ job }) {
       
       <div className="absolute right-4 top-4 w-12 h-12 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center">
         
-        <div className="text-sm font-semibold text-slate-800/60">{job.logo}</div>
+        <div className="text-sm font-semibold text-slate-800/60"><img src={job.logo} alt="" /></div>
       </div>
 
    
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-slate-900/90">{job.title}</h3>
+        <h3 className="text-lg font-semibold text-slate-900/90 w-[80%]">{job.title}</h3>
         <p className="text-sm text-slate-700/80 mt-2">{job.company}</p>
 
         <hr className="my-4 border-white/10" />

@@ -66,8 +66,8 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="relative bg-gradient-to-r from-[#63B6DD] via-[#9AD6F2] to-[#1C7EAC] py-16 px-10 rounded-xl">
-
+    <section className="relative bg-gradient-to-r from-[#63B6DD] via-[#9AD6F2] to-[#1C7EAC] py-16 px-10 ">
+      <span className="h-8 w-[3px] bg-[#1C7EAC] rounded-full" />
       <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 text-left mb-10">
         1500+ of Our Old Aspirants – Now it’s your turn
       </h2>
