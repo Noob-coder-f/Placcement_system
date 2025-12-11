@@ -13,7 +13,8 @@ import Dashboard from './InternDash';
 import MentorDashboard from './MentorDash';
 import Payments from './components/Payments';
 import HiringTeamDashboard from './HRDash';
-import Course from './Pages/Course/course'
+import Course from './Pages/Course/course';
+import AdminDashboard from './AdminDash';
 
 
 function App() {
@@ -42,6 +43,8 @@ function App() {
           <Route path="/dashboard/intern" element={<Dashboard />} />
           <Route path="/dashboard/mentor" element={<MentorDashboard />} />
           <Route path="/dashboard/hiring-team" element={<HiringTeamDashboard />} />
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          
 
           {/* //payment gateway route to be added here */}
           <Route path='/payments' element={<Payments />} />
